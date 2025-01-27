@@ -23,9 +23,9 @@ cp /boot/config-$(uname -r) ./config ~/linux-stable/.config
 cd ~/linux-stable
 # check the config to make sure it copied over correctly, and looks right
 vim .config
-make oldconfig
+make -j$(( $(nproc) * 2)) oldconfig
 sudo apt-get install linux-firmware linux-source gcc libncurses-dev dpkg-devlibssl-dev debhelper-compat
-make localmodconfig
+make -j$(( $(nproc) * 2)) localmodconfig
 sudo mkdir -p /usr/local/src/debian
 # i ran this since i saw an error about SSL certs or some such
 sudo cp -v /usr/src/linux-source-*/debian/canonical-*.pem /usr/local/src/debian/
@@ -33,6 +33,6 @@ sudo apt purge linux-source*
 # ensure that you're in the directory where you cloned the linux kernel
 scripts/config --disable SYSTEM_TRUSTED_KEYS
 scripts/config --disable SYSTEM_REVOCATION_KEYS
-make deb-pkg
+make -j$(( $(nproc) * 2)) deb-pkg
 sudo dpkg -i linux-*.deb
 # if you're on bare metal, like i am, you can now remoot into your new Linux kernel
