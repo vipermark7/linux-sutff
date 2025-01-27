@@ -16,6 +16,9 @@
 # then hit Advanced Options, then select a stable kernel that worked last time, like 
 # 6.8.0-51-generic
 # use the latest config-* (default kernel config for Linux Mint) that you have :)
+
+# I'm using `make` instead `make -j8` or whatever number after j, to ensure
+# that multi-core kernel compilation doesn't introudce subtle errors 
 cp /boot/config-$(uname -r) ./config ~/linux-stable/.config
 cd ~/linux-stable
 # check the config to make sure it copied over correctly, and looks right
@@ -23,18 +26,13 @@ vim .config
 make oldconfig
 sudo apt-get install linux-firmware linux-source gcc libncurses-dev dpkg-devlibssl-dev debhelper-compat
 make localmodconfig
-make deb-pkg
 sudo mkdir -p /usr/local/src/debian
 # i ran this since i saw an error about SSL certs or some such
 sudo cp -v /usr/src/linux-source-*/debian/canonical-*.pem /usr/local/src/debian/
 sudo apt purge linux-source*
-make deb-pkg
 # ensure that you're in the directory where you cloned the linux kernel
 scripts/config --disable SYSTEM_TRUSTED_KEYS
 scripts/config --disable SYSTEM_REVOCATION_KEYS
 make deb-pkg
 sudo dpkg -i linux-*.deb
-# restart Linux
-sudo shutdown -r now
-# after the reboot, check your Linux kernel version. It should be 6.9.9
-# if it is, congrats! you've compiled your own cusomt Linux kernel!!!!!! :D :crab:
+# if you're on bare metal, like i am, you can now remoot into your new Linux kernel
